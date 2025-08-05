@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sessões Forex em Tempo Real</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #121212;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: start;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+    }
+    h1 {
+      color: #4fc3f7;
+    }
+    .clock {
+      margin: 10px 0 20px;
+      font-size: 1.2em;
+      color: #ccc;
+    }
+    .session {
+      margin: 10px 0;
+      padding: 10px 20px;
+      border-radius: 8px;
+      border: 1px solid #4fc3f7;
+      width: 300px;
+      text-align: center;
+    }
+    .active {
+      background: #4fc3f7;
+      color: #000;
+      font-weight: bold;
+    }
+    .timezone {
+      margin-top: 30px;
+      max-width: 500px;
+      text-align: center;
+      font-size: 0.95em;
+      color: #aaa;
+    }
+  </style>
+</head>
+<body>
+  <h1>Sessões Forex Ativas</h1>
+  <div class="clock" id="clock">--:--:--</div>
+  <div id="sessions"></div>
+
+  <div class="timezone">
+    <h3>Principais Fusos Horários (UTC)</h3>
+    <p><strong>Sydney:</strong> UTC+10 | <strong>Tóquio:</strong> UTC+9 | <strong>Londres:</strong> UTC+1 (verão) | <strong>Nova York:</strong> UTC-4 (verão)</p>
+    <p>Seu horário local: <span id="local-tz"></span></p>
+  </div>
+
+  <script>
+    const sessions = [
+      { name: "Sydney", start: 0, end: 9 },
+      { name: "Tóquio", start: 2, end: 11 },
+      { name: "Londres", start: 10, end: 19 },
+      { name: "Nova York", start: 15, end: 24 }
+    ];
+
+    function updateSessions() {
+      const now = new Date();
+      const hour = now.getHours();
+      const container = document.getElementById("sessions");
+      container.innerHTML = "";
+
+      sessions.forEach(session => {
+        const isActive = (hour >= session.start && hour < session.end) ||
+                         (session.end === 24 && hour >= session.start);
+        const div = document.createElement("div");
+        div.className = "session" + (isActive ? " active" : "");
+        div.textContent = `${session.name}: ${session.start.toString().padStart(2, '0')}:00 - ${session.end === 24 ? '00' : session.end.toString().padStart(2, '0')}:00`;
+        container.appendChild(div);
+      });
+    }
+
+    function updateClock() {
+      const now = new Date();
+      const clock = document.getElementById("clock");
+      clock.textContent = now.toLocaleTimeString();
+      const tzSpan = document.getElementById("local-tz");
+      const offset = -now.getTimezoneOffset() / 60;
+      tzSpan.textContent = `UTC${offset >= 0 ? '+' + offset : offset}`;
+    }
+
+    updateSessions();
+    updateClock();
+    setInterval(() => {
+      updateSessions();
+      updateClock();
+    }, 1000);
+  </script>
+</body>
+</html>
